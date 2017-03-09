@@ -25,7 +25,7 @@ initDevTools({
 })
 
 function inject(done) {
-  window.addEventListener('message', reactTo('inject', done))
+  window.addEventListener('message', reactTo('inject', data => done()))
   window.__listener__.postMessage('inject', '') 
 }
 
