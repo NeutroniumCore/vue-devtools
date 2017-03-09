@@ -1,6 +1,6 @@
 import { initBackend } from 'src/backend'
 import Bridge from 'src/bridge'
-import CircularJson from 'circular-json'
+import CircularJson from 'circular-json-es6'
 
 
 const bridge = new Bridge({

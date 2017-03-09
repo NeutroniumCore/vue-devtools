@@ -1,6 +1,6 @@
 import { initDevTools } from 'src/devtools'
 import Bridge from 'src/bridge'
-import CircularJson from 'circular-json'
+import CircularJson from 'circular-json-es6'
 
 
 // 2. init devtools
@@ -31,8 +31,10 @@ function inject(done) {
 
 function reactTo(dataType, cb) {
   return evt => {
+    console.log(`received backend -> devtools ${evt.data}`)
     const data = CircularJson.parse(evt.data)
-    if (data.type = dataType)
+    console.log('backend -> devtools', data)
+    if (data.type == dataType)
       cb(data.data)
   }
 }

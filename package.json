@@ -31,7 +31,6 @@
     "buble": "^0.15.1",
     "buble-loader": "^0.4.0",
     "chromedriver": "^2.25.1",
-    "circular-json": "^0.3.1",
     "cross-env": "^3.1.3",
     "css-loader": "^0.26.1",
     "eslint": "^3.9.1",
