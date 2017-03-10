@@ -1,20 +1,25 @@
 import { initDevTools } from 'src/devtools'
 import Bridge from 'src/bridge'
 import CircularJson from 'circular-json-es6'
+import mitt from 'mitt'
+
+window.__listener__.emitter = new mitt()
 
 
-// 2. init devtools
+// 1. init devtools
 initDevTools({
   connect(cb) {
-    // 3. called by devtools: inject backend
+    // 2. called by devtools: inject backend
     inject(() => {
-      // 4. send back bridge
+      // 3. send back bridge
       cb(new Bridge({
         listen(fn) {
-          window.addEventListener('message', reactTo('data', fn))
+          window.__listener__.emitter.on('data', data => {
+            const dataValue = CircularJson.parse(data)
+            fn(dataValue)
+          })
         },
         send(data) {
-          console.log('devtools -> backend', data)
           window.__listener__.postMessage('main', CircularJson.stringify(data))
         }
       }))
@@ -25,16 +30,6 @@ initDevTools({
 })
 
 function inject(done) {
-  window.addEventListener('message', reactTo('inject', data => done()))
-  window.__listener__.postMessage('inject', '') 
-}
-
-function reactTo(dataType, cb) {
-  return evt => {
-    console.log(`received backend -> devtools ${evt.data}`)
-    const data = CircularJson.parse(evt.data)
-    console.log('backend -> devtools', data)
-    if (data.type == dataType)
-      cb(data.data)
-  }
+  window.__listener__.emitter.on('inject', done)
+  window.__listener__.postMessage('inject', '')
 }
