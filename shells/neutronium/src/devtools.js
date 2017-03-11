@@ -23,7 +23,7 @@ initDevTools({
         },
         send(data) {
           console.log('devtools -> backend', data)
-          window.__listener__.postMessage('main', CircularJson.stringify(data))
+          window.__listener__.postMessage('data', CircularJson.stringify(data))
         }
       }))
     })
@@ -34,6 +34,6 @@ initDevTools({
 })
 
 function inject(done) {
-  window.__listener__.emitter.on('inject', done)
+  window.__listener__.emitter.on('injectDone', done)
   window.__listener__.postMessage('inject', '')
 }

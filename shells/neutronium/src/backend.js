@@ -14,7 +14,7 @@ const bridge = new Bridge({
   },
   send(data) {
     console.log('backend -> devtools', data)
-    window.__listener__.postMessage('debug', CircularJson.stringify(data))
+    window.__listener__.postMessage('data', CircularJson.stringify(data))
   }
 })
 
