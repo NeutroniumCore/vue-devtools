@@ -20,6 +20,9 @@ module.exports = {
     publicPath: '/build/',
     filename: '[name].js',
   },
+  externals:{
+    'neutronium_listener' : '__neutronium_listener__'
+  },
   resolve: {
     alias: Object.assign({}, alias, {
       vue$: 'vue/dist/vue.common.js'

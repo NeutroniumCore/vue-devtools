@@ -1,20 +1,14 @@
 import { initBackend } from 'src/backend'
 import Bridge from 'src/bridge'
-import CircularJson from 'circular-json-es6'
-import mitt from 'mitt'
-
-window.__listener__.emitter = new mitt()
+import listener from 'neutronium_listener'
 
 const bridge = new Bridge({
   listen(fn) {
-    window.__listener__.emitter.on('data', data => {
-      const dataValue = CircularJson.parse(data)
-      fn(dataValue)
-    })
+    listener.on('data',fn)
   },
   send(data) {
     console.log('backend -> devtools', data)
-    window.__listener__.postMessage('data', CircularJson.stringify(data))
+    listener.post('data', data)
   }
 })
 

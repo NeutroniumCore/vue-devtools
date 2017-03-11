@@ -1,10 +1,6 @@
 import { initDevTools } from 'src/devtools'
 import Bridge from 'src/bridge'
-import CircularJson from 'circular-json-es6'
-import mitt from 'mitt'
-
-window.__listener__.emitter = new mitt()
-
+import listener from 'neutronium_listener'
 
 // 1. init devtools
 initDevTools({
@@ -15,15 +11,14 @@ initDevTools({
       // 3. send back bridge
       cb(new Bridge({
         listen(fn) {
-          window.__listener__.emitter.on('data', data => {
+           listener.on('data', data => {
             console.log('backend -> devtools', data)
-            const dataValue = CircularJson.parse(data)
-            fn(dataValue)
+            fn(data)
           })
         },
         send(data) {
           console.log('devtools -> backend', data)
-          window.__listener__.postMessage('data', CircularJson.stringify(data))
+          listener.post('data', data)
         }
       }))
     })
@@ -34,6 +29,6 @@ initDevTools({
 })
 
 function inject(done) {
-  window.__listener__.emitter.on('injectDone', done)
-  window.__listener__.postMessage('inject', '')
+  listener.on('injectDone', done)
+  listener.post('inject', '')
 }
