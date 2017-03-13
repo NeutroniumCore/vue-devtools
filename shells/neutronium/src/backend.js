@@ -7,7 +7,6 @@ const bridge = new Bridge({
     listener.on('data',fn)
   },
   send(data) {
-    console.log('backend -> devtools', data)
     listener.post('data', data)
   }
 })
