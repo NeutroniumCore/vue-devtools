@@ -30,5 +30,5 @@ initDevTools({
 
 function inject(done) {
   listener.on('injectDone', done)
-  listener.post('inject', '')
+  listener.post('inject')
 }
