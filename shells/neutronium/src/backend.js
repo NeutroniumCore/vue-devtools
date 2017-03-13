@@ -4,10 +4,10 @@ import listener from 'neutronium_listener'
 
 const bridge = new Bridge({
   listen(fn) {
-    listener.on('data',fn)
+    listener.on('main:data',fn)
   },
   send(data) {
-    listener.post('data', data)
+    listener.post('dev:data', data)
   }
 })
 
