@@ -11,14 +11,14 @@ initDevTools({
       // 3. send back bridge
       cb(new Bridge({
         listen(fn) {
-           listener.on('data', data => {
+           listener.on('dev:data', data => {
             console.log('backend -> devtools', data)
             fn(data)
           })
         },
         send(data) {
           console.log('devtools -> backend', data)
-          listener.post('data', data)
+          listener.post('main:data', data)
         }
       }))
     })
@@ -29,6 +29,6 @@ initDevTools({
 })
 
 function inject(done) {
-  listener.on('injectDone', done)
-  listener.post('inject')
+  listener.on('dev:injectDone', done)
+  listener.post('main:inject')
 }
