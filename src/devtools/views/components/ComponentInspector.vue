@@ -6,7 +6,7 @@
         <span>{{ target.name }}</span>
         <span style="color:#ccc">&gt;</span>
       </span>
-      <a class="button inspect" @click="inspectDOM" title="Inspect DOM">
+      <a v-if="isChrome" class="button inspect" @click="inspectDOM" title="Inspect DOM">
         <i class="material-icons">visibility</i>
         <span>Inspect DOM</span>
       </a>
@@ -42,8 +42,11 @@ export default {
     ScrollPane,
     ActionHeader
   },
+  data() {
+      return {isChrome: typeof chrome !== 'undefined' && chrome.devtools}
+  },
   props: {
-    target: Object
+    target: Object  
   },
   computed: {
     hasTarget () {
@@ -60,13 +63,7 @@ export default {
   methods: {
     inspectDOM () {
       if (!this.hasTarget) return
-      if (isChrome) {
-        chrome.devtools.inspectedWindow.eval(
-          `inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get(${this.target.id}).$el)`
-        )
-      } else {
-        window.alert('DOM inspection is not supported in this shell.')
-      }
+      chrome.devtools.inspectedWindow.eval(`inspect(window.__VUE_DEVTOOLS_INSTANCE_MAP__.get(${this.target.id}).$el)` )
     }
   }
 }
