@@ -4,7 +4,7 @@ var alias = require('../alias')
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
 var bubleOptions = {
-  target: { chrome: 52 },
+  target: { chrome: 52, firefox: 48 },
   objectAssign: 'Object.assign'
 }
 
@@ -21,9 +21,7 @@ module.exports = {
     filename: '[name].js',
   },
   resolve: {
-    alias: Object.assign({}, alias, {
-      vue$: 'vue/dist/vue.common.js'
-    })
+    alias
   },
   module: {
     rules: [
@@ -50,11 +48,9 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#source-map',
+  devtool: '#cheap-module-source-map',
   devServer: {
     quiet: true
   },
-  plugins: [
-    new FriendlyErrorsPlugin()
-  ]
+  plugins: process.env.VUE_DEVTOOL_TEST ? [] :[new FriendlyErrorsPlugin()]
 }

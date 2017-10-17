@@ -6,8 +6,19 @@
 </template>
 
 <script>
+// this computed property should be visible 
+// even if component has no 'computed' defined
+const computedPropMixin = {
+  computed: {
+    computedPropFromMixin() {
+      return null
+    }
+  }
+}
+
 export default {
   props: ['id'],
+  mixins: [ computedPropMixin ],
   data () {
     let a = { c: function () {} }
     a.a = a
@@ -31,7 +42,7 @@ export default {
           e: undefined,
           f: true,
           g: 12345,
-          h: 'I am a really long string mostly just to see how the horizontal scrolling works.',
+          h: 'I am a really long string mostly just to see how the horizontal scrolling works.'
         }
       }
     }

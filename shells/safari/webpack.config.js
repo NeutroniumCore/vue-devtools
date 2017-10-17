@@ -1,34 +1,36 @@
 var path = require('path')
 var webpack = require('webpack')
 var alias = require('../alias')
+var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
 var bubleOptions = {
-  target: process.env.NODE_ENV === 'production' ? null : { chrome: 52, firefox: 48 },
+  target: { safari: 9 },
   objectAssign: 'Object.assign'
 }
 
 module.exports = {
   entry: {
-    hook: './src/hook.js',
     devtools: './src/devtools.js',
-    background: './src/background.js',
-    'devtools-background': './src/devtools-background.js',
     backend: './src/backend.js',
+    hook: './src/hook.js',
+    'hook-loader': './src/hook-loader.js',
     proxy: './src/proxy.js',
-    detector: './src/detector.js'
   },
   output: {
-    path: path.join(__dirname, 'build'),
-    filename: '[name].js'
+    path: __dirname + '/Vue.js devtools.safariextension/build',
+    publicPath: '/build/',
+    filename: '[name].js',
   },
   resolve: {
-    alias
+    alias: Object.assign({}, alias, {
+      vue$: 'vue/dist/vue.common.js'
+    })
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        loader: 'buble-loader',
+        loader:  'buble-loader',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
         options: bubleOptions
       },
@@ -49,17 +51,11 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: process.env.NODE_ENV !== 'production'
-    ? '#inline-source-map'
-    : false
-}
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports.plugins = [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    })
+  devtool: '#cheap-module-eval-source-map',
+  devServer: {
+    quiet: true
+  },
+  plugins: [
+    new FriendlyErrorsPlugin()
   ]
 }

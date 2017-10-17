@@ -17,7 +17,7 @@ module.exports = {
       .click('.instance .self')
       .assert.cssClassPresent('.instance', 'selected')
       .assert.visible('.tree')
-      .assert.containsText('.component-name', 'Root')
+      .assert.containsText('.action-header .title', 'Root')
       .assert.elementPresent('.data-field')
       .assert.containsText('.data-field', 'obj:Object')
 
@@ -26,10 +26,22 @@ module.exports = {
 
       // select child instance
       .click('.instance .instance:nth-child(1) .self')
-      .assert.containsText('.component-name', 'Counter')
-      .assert.containsText('.data-field', 'count:0 computed')
-      .assert.containsText('.data-field:nth-child(2)', 'hello:undefined')
-      .assert.containsText('.data-field:nth-child(3)', 'test:1 computed')
+      .assert.containsText('.action-header .title', 'Counter')
+      .assert.containsText('.data-el.vuex-bindings .data-field', 'count:0')
+      .assert.containsText('.data-el.computed .data-field', 'test:1')
+      .assert.containsText('.data-el.firebase-bindings .data-field', 'hello:undefined')
+
+      // prop types
+      .click('.instance .instance:nth-child(2) .self')
+      .assert.containsText('.action-header .title', 'Target')
+      .assert.containsText('.data-el.props .data-field:nth-child(1)', 'ins:\nObject')
+      .assert.containsText('.data-el.props .data-field:nth-child(2)', 'msg:\n"hi"')
+      .assert.containsText('.data-el.props .data-field:nth-child(3)', 'obj:\nundefined')
+      // Regexp
+      .assert.containsText('.data-el.data .data-field:nth-child(5)', 'regex:/(a\\w+b)/g')
+      // Literals
+      .assert.containsText('.data-el.data .data-field:nth-child(4)', 'NaN')
+      .assert.containsText('.data-el.data .data-field:nth-child(1)', 'Infinity')
 
       // expand child instance
       .click('.instance .instance:nth-child(2) .arrow-wrapper')
@@ -155,6 +167,16 @@ module.exports = {
         .assert.containsText('#counter p', '2')
         .frame(null)
 
+      // getters
+      .assert.containsText('.vuex-state-inspector', 'isPositive:true')
+      .frame('target')
+        .click('.decrement')
+        .click('.decrement')
+        .click('.decrement')
+        .frame(null)
+      .click('.history .entry:nth-child(4)')
+      .assert.containsText('.vuex-state-inspector', 'isPositive:false')
+
       // toggle recording
       .click('.toggle-recording')
       .assert.containsText('.toggle-recording', 'Paused')
@@ -163,7 +185,7 @@ module.exports = {
       .frame('target')
         .click('.increment')
         .frame(null)
-      .assert.count('.history .entry', 1)
+      .assert.count('.history .entry', 4)
 
       // copy vuex state
       .click('.export')

@@ -9,17 +9,13 @@
         v-show="isExpandableType">
       </span>
       <span class="key">{{ field.key }}</span>
-      <span class="colon">:</span>
-      <span class="value" :class="valueType">{{ formattedValue }}</span>
-      <div v-if="field.type" :class="['type', hyphen(field.type)]">
-        {{ field.type }}
-        <div class="meta" v-if="field.meta">
-          <div class="meta-field" v-for="(val, key) in field.meta">
-            <span class="key">{{ key }}</span>
-            <span class="value">{{ val }}</span>
-          </div>
+      <span class="colon">:<div class="meta" v-if="field.meta">
+        <div class="meta-field" v-for="(val, key) in field.meta">
+          <span class="key">{{ key }}</span>
+          <span class="value">{{ val }}</span>
         </div>
-      </div>
+      </div></span>
+      <span class="value" :class="valueType">{{ formattedValue }}</span>
     </div>
     <div class="children" v-if="expanded && isExpandableType">
       <data-field
@@ -39,9 +35,26 @@
 </template>
 
 <script>
-import { UNDEFINED, INFINITY, isPlainObject } from 'src/util'
+import {
+  UNDEFINED,
+  INFINITY,
+  NAN,
+  isPlainObject,
+  sortByKey
+} from 'src/util'
 
 const rawTypeRE = /^\[object (\w+)]$/
+const specialTypeRE = /^\[native \w+ (.*)\]$/
+
+function subFieldCount (value) {
+  if (Array.isArray(value)) {
+    return value.length
+  } else if (value && typeof value === 'object') {
+    return Object.keys(value).length
+  } else {
+    return 0
+  }
+}
 
 export default {
   name: 'DataField',
@@ -52,7 +65,7 @@ export default {
   data () {
     return {
       limit: Array.isArray(this.field.value) ? 10 : Infinity,
-      expanded: this.depth === 0 && this.field.key !== '$route'
+      expanded: this.depth === 0 && this.field.key !== '$route' && (subFieldCount(this.field.value) < 5)
     }
   },
   computed: {
@@ -61,12 +74,16 @@ export default {
       const type = typeof value
       if (value == null || value === UNDEFINED) {
         return 'null'
-      } else if (type === 'boolean' || type === 'number' || value === INFINITY) {
-        return 'literal'
       } else if (
-        value instanceof RegExp ||
-        (type === 'string' && !rawTypeRE.test(value))
+        type === 'boolean' ||
+        type === 'number' ||
+        value === INFINITY ||
+        value === NAN
       ) {
+        return 'literal'
+      } else if (specialTypeRE.test(value)) {
+        return 'native'
+      } else if (type === 'string' && !rawTypeRE.test(value)) {
         return 'string'
       }
     },
@@ -80,12 +97,16 @@ export default {
         return 'null'
       } else if (value === UNDEFINED) {
         return 'undefined'
+      } else if (value === NAN) {
+        return 'NaN'
       } else if (value === INFINITY) {
         return 'Infinity'
       } else if (Array.isArray(value)) {
         return 'Array[' + value.length + ']'
       } else if (isPlainObject(value)) {
         return 'Object' + (Object.keys(value).length ? '' : ' (empty)')
+      } else if (this.valueType === 'native') {
+        return specialTypeRE.exec(value)[1]
       } else if (typeof value === 'string') {
         var typeMatch = value.match(rawTypeRE)
         if (typeMatch) {
@@ -93,8 +114,6 @@ export default {
         } else {
           return JSON.stringify(value)
         }
-      } else if (value instanceof RegExp) {
-        return value.toString()
       } else {
         return value
       }
@@ -107,11 +126,10 @@ export default {
           value: item
         }))
       } else if (typeof value === 'object') {
-        value = Object.keys(value).map(key => ({
+        value = sortByKey(Object.keys(value).map(key => ({
           key,
           value: value[key]
-        }))
-        value = value.slice().sort((a, b) => a.key > b.key)
+        })))
       }
       return value
     },
@@ -131,7 +149,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import "../common"
+@import "../variables"
 
 .data-field
   user-select text
@@ -152,20 +170,23 @@ export default {
     position absolute
     top 7px
     left 0px
+    transition transform .1s ease
     &.rotated
       transform rotate(90deg)
   .key
     color #881391
   .colon
     margin-right .5em
+    position relative
   .value
     color #444
-    &.string
+    &.string, &.native
       color #c41a16
     &.null
       color #999
     &.literal
       color #0033cc
+
   .type
     color $background-color
     padding 3px 6px
@@ -178,10 +199,6 @@ export default {
     background-color #eee
     &.prop
       background-color #96afdd
-      &:hover
-        cursor pointer
-        .meta
-          display block
     &.computed
       background-color #af90d5
     &.vuex-getter
@@ -190,31 +207,37 @@ export default {
       background-color #ffcc00
     &.observable
       background-color #ff9999
+
+  .meta
+    display none
+    position absolute
+    z-index 999
+    font-size 11px
+    color #444
+    top 0
+    left calc(100% + 5px)
+    width 150px
+    border 1px solid #e3e3e3
+    border-radius 3px
+    padding 8px 12px
+    background-color $background-color
+    line-height 16px
+    box-shadow 0 2px 12px rgba(0,0,0,.1)
+    .key
+      width 65px
+  .meta-field
+    display block
+  &:hover
+    cursor pointer
     .meta
-      display none
-      position absolute
-      z-index 999
-      font-size 11px
-      color #444
-      top 0
-      left calc(100% + 4px)
-      width 170px
-      border 1px solid #e3e3e3
-      border-radius 3px
-      padding 8px 12px
-      background-color $background-color
-      line-height 16px
-      box-shadow 0 2px 12px rgba(0,0,0,.1)
-      .key
-        width 90px
-    .meta-field
       display block
+
   .app.dark &
     .key
       color: #e36eec
     .value
       color #bdc6cf
-      &.string
+      &.string, &.native
         color #e33e3a
       &.null
         color #999

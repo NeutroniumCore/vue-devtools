@@ -3,12 +3,28 @@ import App from './App.vue'
 import store from './store'
 import { parse } from '../util'
 
-Vue.config.errorHandler = (e, vm) => {
-  bridge.send('ERROR', {
-    message: e.message,
-    stack: e.stack,
-    component: vm.$options.name || vm.$options._componentTag || 'anonymous'
-  })
+// Capture and log devtool errors when running as actual extension
+// so that we can debug it by inspecting the background page.
+// We do want the errors to be thrown in the dev shell though.
+if (typeof chrome !== 'undefined' && chrome.devtools) {
+  Vue.config.errorHandler = (e, vm) => {
+    bridge.send('ERROR', {
+      message: e.message,
+      stack: e.stack,
+      component: vm.$options.name || vm.$options._componentTag || 'anonymous'
+    })
+  }
+}
+
+Vue.options.renderError = (h, e) => {
+  return h('pre', {
+    style: {
+      backgroundColor: 'red',
+      color: 'white',
+      fontSize: '12px',
+      padding: '10px'
+    }
+  }, e.stack)
 }
 
 let app = null
@@ -68,8 +84,8 @@ function initApp (shell) {
       store.commit('components/RECEIVE_INSTANCE_DETAILS', parse(details))
     })
 
-    bridge.on('vuex:init', state => {
-      store.commit('vuex/INIT', state)
+    bridge.on('vuex:init', snapshot => {
+      store.commit('vuex/INIT', snapshot)
     })
 
     bridge.on('vuex:mutation', payload => {

@@ -14,9 +14,11 @@ Works with [vuex](https://github.com/vuejs/vuex) for time-travel debugging:
 
 ### Installation
 
-Currently only a Chrome devtools extension is available.
+- [Get the Chrome Extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
 
-[Get it on the Chrome Web Store](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd).
+- [Get the Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
+
+- [Workaround for Safari](https://github.com/vuejs/vue-devtools/blob/master/docs/workaround-for-safari.md)
 
 ### Manual Installation
 
@@ -35,6 +37,36 @@ Currently only a Chrome devtools extension is available.
 2. `npm install`
 3. `npm run dev`
 4. A plain shell with a test app will be available at `localhost:8080`.
+
+### Testing as Firefox addon
+
+ 1. Install `web-ext`
+
+	~~~~
+	$ npm install --global web-ext
+	~~~~
+
+	Or, for Yarn:
+
+	~~~~
+	$ yarn global add web-ext
+	~~~~
+
+	Also, make sure `PATH` is set up. Something like this in `~/.bash_profile`:
+
+	~~~~
+	$ PATH=$PATH:$(yarn global bin)
+	~~~~
+
+ 2. Build and run in Firefox
+
+	~~~~
+	$ npm run build
+	$ npm run run:firefox
+	~~~~
+
+	When using Yarn, just replace `npm` with `yarn`.
+
 
 ### License
 

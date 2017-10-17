@@ -1,4 +1,4 @@
-import { set, nextTick } from 'vue'
+import Vue from 'vue'
 
 const state = {
   selected: null,
@@ -17,7 +17,7 @@ const mutations = {
     state.instances = Object.freeze(payload.instances)
     state.inspectedInstance = Object.freeze(payload.inspectedInstance)
     if (process.env.NODE_ENV !== 'production') {
-      nextTick(() => {
+      Vue.nextTick(() => {
         console.log(`devtools render took ${window.performance.now() - start}ms.`)
       })
     }
@@ -26,13 +26,13 @@ const mutations = {
     state.inspectedInstance = Object.freeze(instance)
   },
   TOGGLE_INSTANCE ({ expansionMap }, { id, expanded }) {
-    set(expansionMap, id, expanded)
+    Vue.set(expansionMap, id, expanded)
   }
 }
 
 const actions = {
-  toggleInstance ({commit, dispatch}, {instance, expanded, recursive}) {
-    commit('TOGGLE_INSTANCE', {id: instance.id, expanded})
+  toggleInstance ({ commit, dispatch }, { instance, expanded, recursive }) {
+    commit('TOGGLE_INSTANCE', { id: instance.id, expanded })
 
     if (recursive) {
       instance.children.forEach((child) => {
