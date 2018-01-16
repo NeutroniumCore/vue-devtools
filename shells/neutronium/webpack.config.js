@@ -2,10 +2,10 @@ var path = require('path')
 var webpack = require('webpack')
 var alias = require('../alias')
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+const UglifyPlugin = require('uglifyjs-webpack-plugin')
 
 var bubleOptions = {
-  target: null,
-  // { chrome: 52 },
+  target: { chrome: 52, firefox: 48 },
   objectAssign: 'Object.assign'
 }
 
@@ -32,7 +32,7 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader:  'buble-loader',
+        loader: 'buble-loader',
         exclude: /node_modules|vue\/dist|vuex\/dist/,
         options: bubleOptions
       },
@@ -59,13 +59,9 @@ module.exports = {
         NODE_ENV: '"production"'
       }
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
-    })
+    new UglifyPlugin()
   ],
-  devtool: '#source-map',
+  devtool: '#cheap-module-source-map',
   devServer: {
     quiet: true
   }
