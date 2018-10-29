@@ -20,8 +20,8 @@ module.exports = {
     publicPath: '/build/',
     filename: '[name].js',
   },
-  externals:{
-    'neutronium_listener' : '__neutronium_listener__'
+  externals: {
+    'neutronium_listener': '__neutronium_listener__'
   },
   resolve: {
     alias: Object.assign({}, alias, {
@@ -59,7 +59,13 @@ module.exports = {
         NODE_ENV: '"production"'
       }
     }),
-    new UglifyPlugin()
+    new UglifyPlugin({
+      uglifyOptions: {
+        compress: {
+          drop_console: true
+        }
+      }
+    })
   ],
   devtool: '#cheap-module-source-map',
   devServer: {
