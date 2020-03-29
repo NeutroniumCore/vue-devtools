@@ -2,20 +2,24 @@
   <div class="data-wrapper">
     <div
       v-for="dataType in dataTypes"
+      :key="dataType"
       :class="['data-el', toDisplayType(dataType, true)]"
     >
       <div
+        v-tooltip="$t('StateInspector.dataType.tooltip')"
         class="data-type selectable-item"
-        v-tooltip="dataTypeTooltip"
         @click="toggle(dataType, $event)"
       >
         <span
-          class="arrow right"
           :class="{ rotated: isExpanded(dataType) }"
-        ></span>
+          class="arrow right"
+        />
         <span class="key">{{ toDisplayType(dataType) }}</span>
       </div>
-      <div v-show="isExpanded(dataType)" class="data-fields">
+      <div
+        v-show="isExpanded(dataType)"
+        class="data-fields"
+      >
         <template v-if="Array.isArray(state[dataType])">
           <data-field
             v-for="field in state[dataType]"
@@ -23,8 +27,8 @@
             :field="field"
             :depth="0"
             :path="field.key"
-            :editable="field.editable">
-          </data-field>
+            :editable="field.editable"
+          />
         </template>
         <template v-else>
           <data-field
@@ -33,8 +37,8 @@
             :field="{ value, key }"
             :depth="0"
             :path="key"
-            :editable="false">
-          </data-field>
+            :editable="false"
+          />
         </template>
       </div>
     </div>
@@ -46,8 +50,8 @@ import Vue from 'vue'
 import DataField from './DataField.vue'
 
 const keyOrder = {
-  undefined: 1,
-  props: 2,
+  props: 1,
+  undefined: 2,
   computed: 3,
   state: 1,
   getters: 2
@@ -57,17 +61,20 @@ export default {
   components: {
     DataField
   },
+
   props: {
     state: {
       type: Object,
       required: true
     }
   },
+
   data () {
     return {
       expandedState: {}
     }
   },
+
   computed: {
     dataTypes () {
       return Object.keys(this.state).sort((a, b) => {
@@ -76,11 +83,9 @@ export default {
           (keyOrder[b] || (b.charCodeAt(0) + 999))
         )
       })
-    },
-    dataTypeTooltip () {
-      return `<span class="keyboard">${this.$keys.ctrl}</span> + <i class="material-icons">mouse</i>: Collapse All<br><span class="keyboard">${this.$keys.shift}</span> + <i class="material-icons">mouse</i>: Expand All`
     }
   },
+
   methods: {
     toDisplayType (dataType, asClass) {
       return dataType === 'undefined'
@@ -89,10 +94,12 @@ export default {
           ? dataType.replace(/\s/g, '-')
           : dataType
     },
+
     isExpanded (dataType) {
       const value = this.expandedState[dataType]
       return typeof value === 'undefined' || value
     },
+
     toggle (dataType, event = null) {
       if (event) {
         if (event.ctrlKey || event.metaKey) {
@@ -103,6 +110,7 @@ export default {
       }
       Vue.set(this.expandedState, dataType, !this.isExpanded(dataType))
     },
+
     setExpandToAll (value) {
       this.dataTypes.forEach(key => {
         Vue.set(this.expandedState, key, value)
@@ -116,15 +124,15 @@ export default {
 @import "../variables"
 
 .data-el
-  font-size 14px
+  font-size 15px
 
   &:not(:last-child)
     border-bottom rgba($grey, .4) solid 1px
 
-    .dark &
+    .vue-ui-dark-mode &
       border-bottom-color rgba($grey, .07)
 
-  .dark &
+  .vue-ui-dark-mode &
     box-shadow none
 
   .data-type,
@@ -133,7 +141,7 @@ export default {
     padding 2px 9px 2px 21px
 
   .data-type
-    color $green
+    color $blueishGrey
     position relative
     cursor pointer
     border-radius 3px
@@ -141,12 +149,13 @@ export default {
     align-items baseline
     padding-left 9px
 
-    .dark &
+    .vue-ui-dark-mode &
       color lighten(#486887, 30%)
 
     .arrow
       transition transform .1s ease
       margin-right 8px
+      opacity .7
       &.rotated
         transform rotate(90deg)
 

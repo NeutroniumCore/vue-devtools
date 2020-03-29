@@ -6,7 +6,7 @@ export function initVuexBackend (hook, bridge) {
 
   const getSnapshot = () => stringify({
     state: store.state,
-    getters: store.getters
+    getters: store.getters || {}
   })
 
   bridge.send('vuex:init', getSnapshot())
@@ -40,4 +40,20 @@ export function initVuexBackend (hook, bridge) {
   bridge.on('vuex:toggle-recording', enabled => {
     recording = enabled
   })
+}
+
+export function getCustomStoreDetails (store) {
+  return {
+    _custom: {
+      type: 'store',
+      display: 'Store',
+      value: {
+        state: store.state,
+        getters: store.getters
+      },
+      fields: {
+        abstract: true
+      }
+    }
+  }
 }

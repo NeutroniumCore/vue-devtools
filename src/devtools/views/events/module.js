@@ -1,5 +1,6 @@
 import storage from '../../storage'
 import { classify } from 'src/util'
+import SharedData from 'src/shared-data'
 
 const ENABLED_KEY = 'EVENTS_ENABLED'
 const enabled = storage.get(ENABLED_KEY)
@@ -42,11 +43,11 @@ const mutations = {
 }
 
 const getters = {
-  activeEvent: state => {
-    return state.events[state.inspectedIndex]
+  activeEvent: (state, getters) => {
+    return getters.filteredEvents[state.inspectedIndex]
   },
   filteredEvents: (state, getters, rootState) => {
-    const classifyComponents = rootState.components.classifyComponents
+    const classifyComponents = SharedData.classifyComponents
     let searchText = state.filter.toLowerCase()
     const searchComponent = /<|>/g.test(searchText)
     if (searchComponent) {
@@ -58,9 +59,18 @@ const getters = {
   }
 }
 
+const actions = {
+  inspect: ({ commit, getters }, index) => {
+    if (index < 0) index = 0
+    if (index >= getters.filteredEvents.length) index = getters.filteredEvents.length - 1
+    commit('INSPECT', index)
+  }
+}
+
 export default {
   namespaced: true,
   state,
   mutations,
-  getters
+  getters,
+  actions
 }

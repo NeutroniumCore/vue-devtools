@@ -1,8 +1,8 @@
 # Open component in editor
 
-## Nuxt.js
+## Nuxt.js & Quasar CLI
 
-Nuxt supports this feature out-of-the-box. Make sure to be in debug mode.
+Nuxt & Quasar CLI supports this feature out-of-the-box. Make sure to be in debug mode.
 
 ## Webpack
 
@@ -35,3 +35,17 @@ openInEditor('code')
 ## Node.js
 
 You can use the [launch-editor](https://github.com/yyx990803/launch-editor#usage) package to setup an HTTP route with the `/__open-in-editor` path. It will receive `file` as an URL variable.
+
+## Customize request
+
+You can change the request host (default `/`) with the following code in your frontend app:
+
+```js
+if (process.env.NODE_ENV !== 'production')
+  // App served from port 4000
+  // Webpack dev server on port 9000
+  window.VUE_DEVTOOLS_CONFIG = {
+    openInEditorHost: 'http://localhost:9000/'
+  }
+}
+```

@@ -1,74 +1,25 @@
-var path = require('path')
-var webpack = require('webpack')
-var alias = require('../alias')
-var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-const UglifyPlugin = require('uglifyjs-webpack-plugin')
+const path = require('path')
+const createConfig = require('../createConfig')
 
-var bubleOptions = {
-  target: { chrome: 52, firefox: 48 },
-  objectAssign: 'Object.assign'
+const target = {
+  chrome: 52,
+  firefox: 48,
+  safari: 9,
+  ie: 11
 }
 
-module.exports = {
+module.exports = createConfig({
   entry: {
+    hook: './src/hook.js',
     devtools: './src/devtools.js',
     backend: './src/backend.js',
-    hook: './src/hook.js'
-  },
-  output: {
-    path: __dirname + '/build',
-    publicPath: '/build/',
-    filename: '[name].js',
   },
   externals: {
     'neutronium_listener': '__neutronium_listener__'
   },
-  resolve: {
-    alias: Object.assign({}, alias, {
-      vue$: 'vue/dist/vue.common.js'
-    })
+  output: {
+    path: path.join(__dirname, 'build'),
+    filename: '[name].js'
   },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        loader: 'buble-loader',
-        exclude: /node_modules|vue\/dist|vuex\/dist/,
-        options: bubleOptions
-      },
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          preserveWhitespace: false,
-          buble: bubleOptions
-        }
-      },
-      {
-        test: /\.(png|woff2)$/,
-        loader: 'url-loader?limit=0'
-      }
-    ]
-  },
-  performance: {
-    hints: false
-  },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new UglifyPlugin({
-      uglifyOptions: {
-        compress: {
-          drop_console: true
-        }
-      }
-    })
-  ],
-  devtool: '#cheap-module-source-map',
-  devServer: {
-    quiet: true
-  }
-}
+  devtool: false
+}, target)
