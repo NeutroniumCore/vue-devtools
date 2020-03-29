@@ -4,7 +4,7 @@
   "description": "devtools for Vue.js!",
   "main": "index.js",
   "scripts": {
-    "build:neutronium": "cd shells/neutronium && cross-env NODE_ENV=production && webpack --progress --hide-modules",
+    "build:neutronium": "cd shells/neutronium && cross-env NODE_ENV=production webpack --progress --hide-modules",
     "dev": "cross-env PORT=8100 npm run dev:shell",
     "dev:shell": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
     "dev:chrome": "cd shells/chrome && webpack --watch --hide-modules",
